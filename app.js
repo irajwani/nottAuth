@@ -54,12 +54,12 @@ app.post("/authenticate", (req, res) => {
 app.get('/', (req, res) => res.send('I exist to fulfill a specific role in the authentication flow for chatkit users. \n Imad Rajwani is my lord and master. \n email: imadrajwani@gmail.com'))
 
 
-// let port = process.env.PORT;
-// if (port == null || port == "") {
-//   port = 3003;
-// }
+let port = process.env.PORT;
+if (port == null || port == "") {
+  port = 3003;
+}
 
-let port = 3003;
+// let port = 3003;
 
 app.listen(port, err => {
   if (err) {
