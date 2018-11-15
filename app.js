@@ -6,7 +6,7 @@ const Chatkit = require("@pusher/chatkit-server");
 
 const app = express();
 const {firebaseConfig, CHATKIT_INSTANCE_LOCATOR, CHATKIT_SECRET_KEY} = require('./keys');
-firebase.initializeApp(firebaseConfig);
+// firebase.initializeApp(firebaseConfig);
 
 // const firebaseDBHelloWorld = `${firebase.database().ref().once("value", (snap) => {console.log(snap.val())})}`;
 
