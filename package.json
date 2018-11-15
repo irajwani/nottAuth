@@ -1,0 +1,17 @@
+{
+  "name": "nottauth",
+  "version": "1.0.0",
+  "description": "Authentication endpoint for react native app called \"NottMyStyle\"",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Imad Rajwani",
+  "license": "ISC",
+  "dependencies": {
+    "@pusher/chatkit-server": "^1.0.4",
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "firebase": "^5.5.8"
+  }
+}
