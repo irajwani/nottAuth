@@ -82,7 +82,8 @@ app.post("/authenticate", (req, res) => {
   // const authData = chatkit.authenticate({ userId: req.query.user_id });
   // res.status(authData.status).send(authData.body);
   // res.send(authData.status + Object.keys(authData))
-  res.send('yo' + req.query.user_id)
+  console.log('yo' + req.query.user_id)
+  res.send('https://us1.pusherplatform.io/services/chatkit_token_provider/v1/7a5d48bb-1cda-4129-88fc-a7339330f5eb/token')
 });
 
 app.get("/clean", (req, res) => {
