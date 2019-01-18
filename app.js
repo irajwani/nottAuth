@@ -79,9 +79,10 @@ app.use(cors());
 app.post("/authenticate", (req, res) => {
   console.log(chatkit, typeof chatkit);
   // res.send('yo')
-  const authData = chatkit.authenticate({ userId: req.query.user_id });
+  // const authData = chatkit.authenticate({ userId: req.query.user_id });
   // res.status(authData.status).send(authData.body);
-  res.send(authData.status, Object.keys(authData))
+  // res.send(authData.status + Object.keys(authData))
+  res.send('yo' + req.query.user_id)
 });
 
 app.get("/clean", (req, res) => {
