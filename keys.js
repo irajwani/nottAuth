@@ -12,6 +12,7 @@ const firebaseAdminConfig = {
   credential: admin.credential.cert(serviceAccount),
   databaseURL: 'https://nottmystyle-447aa.firebaseio.com'
 }
+
 const CHATKIT_SECRET_KEY = "9b627f79-3aba-48df-af55-838bbb72222d:Pk9vcGeN/h9UQNGVEv609zhjyiPKtmnd0hlBW2T4Hfw="
 const CHATKIT_INSTANCE_LOCATOR = "v1:us1:7a5d48bb-1cda-4129-88fc-a7339330f5eb";
 

@@ -1,4 +1,4 @@
-const admin = require("firebase-admin")
+const admin = require("firebase-admin");
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -42,6 +42,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
 
+// app.use((req, res) => {
+//   res.writeHead(200);
+//   res.end("hello world\n");
+// })
+
 // app.post("/users", (req, res) => {
 //   const { username } = req.body;
 //   firebase.database().ref().once("value", (snapshot) => {
@@ -69,9 +74,14 @@ app.use(cors());
   
 // });
 
+
+//TODO: App crashes whenever /authenticate is pinged
 app.post("/authenticate", (req, res) => {
+  console.log(chatkit, typeof chatkit);
+  // res.send('yo')
   const authData = chatkit.authenticate({ userId: req.query.user_id });
-  res.status(authData.status).send(authData.body);
+  // res.status(authData.status).send(authData.body);
+  res.send(authData.status, Object.keys(authData))
 });
 
 app.get("/clean", (req, res) => {
@@ -132,7 +142,17 @@ app.get('/addDateSold', (req, res) => {
   } )
 })
 
-app.get('/', (req, res) => res.send('Hi, I exist to fulfill a specific role in the authentication flow for chatkit users. \n Imad Rajwani is my lord and master. \n email: imadrajwani@gmail.com'))
+
+// app.get()
+
+app.get('/', (req, res) => {
+  // pullFunds(res);
+  res.send(
+  'Hi, I exist to fulfill a specific role in the authentication flow for chatkit users. \n Imad Rajwani is my lord and master. \n email: imadrajwani@gmail.com'
+  
+  );
+}
+  )
 
 
 
@@ -141,8 +161,6 @@ if (port == null || port == "") {
   port = 3003;
 }
 
-// let port = 3003;
-
 app.listen(port, err => {
   if (err) {
     console.log(err);
@@ -150,3 +168,6 @@ app.listen(port, err => {
     console.log(`Running on port ${port}`);
   }
 });
+
+
+// https.createServer(options, app).listen(8080);
