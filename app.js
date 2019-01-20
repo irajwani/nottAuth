@@ -175,7 +175,7 @@ app.post("/authenticate", (req, res) => {
   // res.status(authData.status).send(authData.body);
   // res.send(authData.status + Object.keys(authData))
   // console.log('yo' + req.query.user_id)
-  res.status(200).send('https://us1.pusherplatform.io/services/chatkit_token_provider/v1/7a5d48bb-1cda-4129-88fc-a7339330f5eb/token')
+  res.send('https://us1.pusherplatform.io/services/chatkit_token_provider/v1/7a5d48bb-1cda-4129-88fc-a7339330f5eb/token')
 });
 
 app.get("/clean", (req, res) => {
