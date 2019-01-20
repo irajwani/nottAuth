@@ -47,6 +47,98 @@ app.use(cors());
 //   res.end("hello world\n");
 // })
 
+app.get("/populateConversations", (req, res) => {
+  admin.database().ref().once('value', (snapshot) => {
+    var d = snapshot.val();
+    var users = Object.keys(d.Users);
+    users.forEach((user_id) => {
+      chatkit.getUserRooms({
+        userId: user_id,
+      })
+        .then((rooms) => {
+
+          if(rooms.length < 1) {
+            console.log('user does not have rooms');
+          }
+
+          else {
+            rooms.forEach( (room, index) => {
+              if(!index) {
+                console.log('skipping Users Room')
+              }
+              else {
+  
+                chatkit.getRoomMessages({
+                  roomId: room.id,
+                  direction: "newer",
+                  limit: 1
+                })
+                .then( (roomMessages) => {
+                  var lastMessageText = false, lastMessageSenderIdentification = false, lastMessageDate = false;
+                  if(roomMessages.length > 0) {
+                    lastMessageText = (roomMessages['0'].text).substr(0,40);
+                    lastMessageDate = new Date(roomMessages['0'].updated_at).getDay();
+                    lastMessageSenderIdentification = roomMessages['0'].user_id;
+                  }
+                  var buyerIdentification = room.created_by_id;
+                  var buyer = d.Users[buyerIdentification].profile.name;
+                  var buyerAvatar = d.Users[buyerIdentification].profile.uri;
+                  var sellerIdentification = room.member_user_ids.filter( (id) => id != buyerIdentification )[0];
+                  var seller = d.Users[sellerIdentification].profile.name;
+                  var sellerAvatar = d.Users[sellerIdentification].profile.uri;
+                  var productIdentification = room.name.split(".")[0];
+                  var productImageURL = d.Users[sellerIdentification].products[productIdentification].uris[0]
+                  var obj = { 
+                    productSellerId: sellerIdentification, productImageURL: productImageURL, 
+                    createdByUserId: buyerIdentification, name: room.name, id: room.id, 
+                    buyerIdentification, sellerIdentification,
+                    seller: seller, sellerAvatar: sellerAvatar, 
+                    buyer: buyer, buyerAvatar: buyerAvatar,
+                    lastMessageText, lastMessageDate, lastMessageSenderIdentification
+                  };
+                  var updates = {};
+                  updates['Users/' + buyerIdentification + '/conversations/' + room.id + '/' ] = obj
+                  admin.database().ref().update(updates);
+                  updates['Users/' + sellerIdentification + '/conversations/' + room.id + '/' ] = obj
+                  admin.database().ref().update(updates);
+  
+                })
+                .catch( err => console.log(error) )
+  
+                
+  
+              }
+              
+              
+            }
+  
+            )
+          }
+          
+          
+
+
+
+          // console.log(rooms);
+        }).catch((err) => {
+          console.error(err);
+        });
+    } )
+
+
+    // chatkit.getRooms({})
+    // .then((rooms) => {
+    //   rooms.forEach( (room) => {
+  
+    //   })
+    //   res.send("rooms: " + rooms)
+    //   console.log(rooms);
+    // })
+  })
+  
+  res.send("populating conversations");
+})
+
 // app.post("/users", (req, res) => {
 //   const { username } = req.body;
 //   firebase.database().ref().once("value", (snapshot) => {
@@ -77,13 +169,13 @@ app.use(cors());
 
 //TODO: App crashes whenever /authenticate is pinged
 app.post("/authenticate", (req, res) => {
-  console.log(chatkit, typeof chatkit);
+  // console.log(chatkit, typeof chatkit);
   // res.send('yo')
   // const authData = chatkit.authenticate({ userId: req.query.user_id });
   // res.status(authData.status).send(authData.body);
   // res.send(authData.status + Object.keys(authData))
-  console.log('yo' + req.query.user_id)
-  res.send('https://us1.pusherplatform.io/services/chatkit_token_provider/v1/7a5d48bb-1cda-4129-88fc-a7339330f5eb/token')
+  // console.log('yo' + req.query.user_id)
+  res.status(200).send('https://us1.pusherplatform.io/services/chatkit_token_provider/v1/7a5d48bb-1cda-4129-88fc-a7339330f5eb/token')
 });
 
 app.get("/clean", (req, res) => {
