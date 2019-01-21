@@ -4,7 +4,15 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const Chatkit = require("@pusher/chatkit-server");
 
+
+const engines = require('consolidate');
+const paypal = require('paypal-rest-sdk');
+
 const app = express();
+
+app.engine("ejs", engines.ejs);
+app.set("views", "./views");
+app.set("view engine", "ejs");
 
 const {firebaseAdminConfig, CHATKIT_INSTANCE_LOCATOR, CHATKIT_SECRET_KEY} = require('./keys');
 admin.initializeApp(firebaseAdminConfig);
@@ -38,6 +46,12 @@ const chatkit = new Chatkit.default({
   key: CHATKIT_SECRET_KEY
 });
 
+paypal.configure({
+  'mode': 'sandbox', //sandbox or live
+  'client_id': 'Ab0iwKb2EyBI7XmxZtCxtYg_50u5A0y6s1su-RUWPIl6Mo34i9Wdys_RbsKZlv78UepmEhzWGOPGaMl8',
+  'client_secret': 'ENsifoIBBtrYtzKoY5QjgqxrHeQDYEsXeiXJBwZadap3cTZeugkpvmYDUC3L_f5cxQD7GTqiVKhnlZYq'
+});
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
@@ -47,6 +61,78 @@ app.use(cors());
 //   res.end("hello world\n");
 // })
 
+app.get('/paypal', (req, res) => {
+  var create_payment_json = {
+    "intent": "sale",
+    "payer": {
+        "payment_method": "paypal"
+    },
+    "redirect_urls": {
+        "return_url": "http://localhost:5000/success",
+        "cancel_url": "http://localhost:5000/cancel"
+    },
+    "transactions": [{
+        "item_list": {
+            "items": [{
+                "name": "item",
+                "sku": "item",
+                "price": "1.00",
+                "currency": "GBP",
+                "quantity": 1
+            }]
+        },
+        "amount": {
+            "currency": "GBP",
+            "total": "1.00"
+        },
+        "description": "This is the payment description."
+    }]
+};
+
+
+  paypal.payment.create(create_payment_json, function (error, payment) {
+      if (error) {
+          throw error;
+      } else {
+          console.log("Create Payment Response");
+          console.log(payment);
+          // res.send('placeholder');
+          res.redirect(payment.links[1].href)
+      }
+  });
+})
+
+app.get('/success', (req, res) => {
+  // res.send("Success");
+  var paymentId = req.query.paymentId;
+  var payerID = req.query.PayerID
+  var execute_payment_json = {
+    "payer_id": payerID,
+    "transactions": [{
+        "amount": {
+            "currency": "GBP",
+            "total": "1.00"
+        }
+      }]
+  };
+  paypal.payment.execute(paymentId, execute_payment_json, function (error, payment) {
+      if (error) {
+          console.log(error.response);
+          throw error;
+      } else {
+          console.log("Get Payment Response");
+          console.log(JSON.stringify(payment));
+          res.render('success');
+      }
+  });
+})
+
+app.get('cancel', (req, res) => {
+  res.render('cancel');
+})
+//Populate each user with a sub-branch of all their conversations.
+//TODO: create listener in firebase functions to listen for changes to lastMessage for any user and then update 
+//the appropriate users conversations branches. This method exists to brute force that process whenever.
 app.get("/populateConversations", (req, res) => {
   admin.database().ref().once('value', (snapshot) => {
     var d = snapshot.val();
@@ -240,11 +326,12 @@ app.get('/addDateSold', (req, res) => {
 // app.get()
 
 app.get('/', (req, res) => {
+  res.render('index');
   // pullFunds(res);
-  res.send(
-  'Hi, I exist to fulfill a specific role in the authentication flow for chatkit users. \n Imad Rajwani is my lord and master. \n email: imadrajwani@gmail.com'
+  // res.send(
+  // 'Hi, I exist to fulfill a specific role in the authentication flow for chatkit users. \n Imad Rajwani is my lord and master. \n email: imadrajwani@gmail.com'
   
-  );
+  // );
 }
   )
 

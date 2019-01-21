@@ -10,9 +10,12 @@
   "license": "ISC",
   "dependencies": {
     "@pusher/chatkit-server": "^1.0.4",
+    "consolidate": "^0.15.1",
     "cors": "^2.8.5",
+    "ejs": "^2.6.1",
     "express": "^4.16.4",
     "firebase": "^5.5.8",
-    "firebase-admin": "^6.3.0"
+    "firebase-admin": "^6.3.0",
+    "paypal-rest-sdk": "^1.8.1"
   }
 }
